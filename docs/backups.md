@@ -31,36 +31,36 @@ Retention: 7 days.
 ### Generic Docker service
 ```bash
 # Stop the affected stack
-docker compose -f ~/repos/infra/docker/<service>-compose.yaml down
+docker compose -f ~/repos/personal-server-infrastructure/docker/<service>.yaml down
 
 # Restore archive
 tar -xzf ~/backups/YYYY-MM-DD/archives/services.tar.gz \
   -C /home/ubuntu --strip-components=1 services/<service>/
 
 # Start and verify
-docker compose -f ~/repos/infra/docker/<service>-compose.yaml up -d
+docker compose -f ~/repos/personal-server-infrastructure/docker/<service>.yaml up -d
 docker logs <service> --tail 50
 ```
 
 ### PostgreSQL restore
 ```bash
-docker compose -f ~/repos/infra/docker/vikunja-compose.yaml down
+docker compose -f ~/repos/personal-server-infrastructure/docker/vikunja.yaml down
 cat ~/backups/YYYY-MM-DD/postgres/vikunja.sql | \
   docker exec -i vikunja-db psql -U vikunja vikunja
-docker compose -f ~/repos/infra/docker/vikunja-compose.yaml up -d
+docker compose -f ~/repos/personal-server-infrastructure/docker/vikunja.yaml up -d
 ```
 
 ### SQLite restore
 ```bash
 # Stop the service first
-docker compose -f ~/repos/infra/docker/vaultwarden-compose.yaml down
+docker compose -f ~/repos/personal-server-infrastructure/docker/vaultwarden.yaml down
 
 # Replace the live database
 cp ~/backups/YYYY-MM-DD/sqlite/vaultwarden.sqlite3 \
   /home/ubuntu/services/vaultwarden/data/db.sqlite3
 
 # Start and verify
-docker compose -f ~/repos/infra/docker/vaultwarden-compose.yaml up -d
+docker compose -f ~/repos/personal-server-infrastructure/docker/vaultwarden.yaml up -d
 ```
 
 ## Known gaps

@@ -1,13 +1,13 @@
 # Services
 
-Verification date: `2026-04-07`
+Verification date: `2026-04-08`
 
 ## Gitea
 
 Self-hosted Git service.
 
-- **Runtime**: Docker Compose (`docker/gitea-compose.yaml`)
-- **Image**: `gitea/gitea:latest`
+- **Runtime**: Docker Compose (`docker/gitea.yaml`)
+- **Image**: `gitea/gitea:1.25.5`
 - **Port**: `127.0.0.1:3000`
 - **Exposure**: localhost only
 - **Live data path**: `/home/ubuntu/services/gitea/data/`
@@ -17,8 +17,8 @@ Self-hosted Git service.
 
 Service monitoring dashboard.
 
-- **Runtime**: Docker Compose (`docker/uptime-kuma-compose.yaml`)
-- **Image**: `louislam/uptime-kuma:2`
+- **Runtime**: Docker Compose (`docker/uptime-kuma.yaml`)
+- **Image**: `louislam/uptime-kuma:2.2.1`
 - **Port**: `127.0.0.1:3001`
 - **Network mode**: `host`
 - **Bind control**: `UPTIME_KUMA_HOST=127.0.0.1`
@@ -30,9 +30,9 @@ Service monitoring dashboard.
 
 Task/project management app.
 
-- **Runtime**: Docker Compose (`docker/vikunja-compose.yaml`)
-- **Image**: `vikunja/vikunja:latest`
-- **Database**: `postgres:latest` in Docker on the same host
+- **Runtime**: Docker Compose (`docker/vikunja.yaml`)
+- **Image**: `vikunja/vikunja:2.2.2`
+- **Database**: `postgres:18.3` in Docker on the same host
 - **Port**: `127.0.0.1:3456`
 - **Exposure**: localhost only right now
 - **Live env path**: `/home/ubuntu/services/vikunja/.env`
@@ -45,8 +45,8 @@ Task/project management app.
 
 Password manager.
 
-- **Runtime**: Docker Compose (`docker/vaultwarden-compose.yaml`)
-- **Image**: `vaultwarden/server:latest`
+- **Runtime**: Docker Compose (`docker/vaultwarden.yaml`)
+- **Image**: `vaultwarden/server:1.35.4`
 - **Port**: `127.0.0.1:8082`
 - **Public access**: proxied by nginx at `**redacted**.duckdns.org`
 - **Live data path**: `/home/ubuntu/services/vaultwarden/data/`
@@ -56,19 +56,22 @@ Password manager.
 
 Workflow automation service.
 
-- **Runtime**: Docker Compose (`docker/n8n-compose.yaml`)
-- **Image**: `n8nio/n8n:latest`
+- **Runtime**: Docker Compose (`docker/n8n.yaml`)
+- **Image**: `n8nio/n8n:1.123.29`
 - **Port**: `127.0.0.1:5678`
 - **Public access**: proxied by nginx at `**redacted**.duckdns.org`
-- **Live data path**: `/home/ubuntu/services/n8n/data/`
 - **Live env path**: `/home/ubuntu/services/n8n/.env`
-- **Dependency note**: joins external Docker network `vikunja_default` and uses the Vikunja Postgres container
+- **Live data paths**:
+  - `/home/ubuntu/services/n8n/data/`
+  - `/home/ubuntu/services/n8n/db/`
+- **Database**: dedicated local Postgres container `n8n-db` (`postgres:18.3`)
+- **Dependency note**: n8n depends on `n8n-db`; it does not share the Vikunja database
 
 ## Homepage
 
 Start page / dashboard.
 
-- **Runtime**: Docker Compose (`docker/homepage-compose.yaml`)
+- **Runtime**: Docker Compose (`docker/homepage.yaml`)
 - **Image**: `ghcr.io/gethomepage/homepage:v1.12.3`
 - **Port**: `127.0.0.1:3005`
 - **Exposure**: localhost only
@@ -78,16 +81,16 @@ Start page / dashboard.
 
 ### Grafana
 
-- **Runtime**: Docker Compose (`docker/monitoring-compose.yaml`)
-- **Image**: `grafana/grafana:latest`
+- **Runtime**: Docker Compose (`docker/monitoring.yaml`)
+- **Image**: `grafana/grafana:12.4.2`
 - **Port**: `127.0.0.1:3002`
 - **Exposure**: localhost only
 - **Live data path**: `/home/ubuntu/services/monitoring/grafana/data/`
 
 ### Prometheus
 
-- **Runtime**: Docker Compose (`docker/monitoring-compose.yaml`)
-- **Image**: `prom/prometheus:latest`
+- **Runtime**: Docker Compose (`docker/monitoring.yaml`)
+- **Image**: `prom/prometheus:v3.11.0`
 - **Port**: `127.0.0.1:9090`
 - **Exposure**: localhost only
 - **Live config/data path**:
@@ -96,8 +99,8 @@ Start page / dashboard.
 
 ### node_exporter
 
-- **Runtime**: Docker Compose (`docker/monitoring-compose.yaml`)
-- **Image**: `prom/node-exporter:latest`
+- **Runtime**: Docker Compose (`docker/monitoring.yaml`)
+- **Image**: `prom/node-exporter:v1.10.2`
 - **Port**: `127.0.0.1:9100`
 - **Exposure**: localhost only
 - **Runtime note**: `pid: host`, host root mounted read-only at `/:/host`
@@ -106,22 +109,24 @@ Start page / dashboard.
 
 Recipe manager.
 
-- **Runtime**: Docker Compose (`docker/tandoor-compose.yaml`)
-- **Image**: `vabene1111/recipes:2.6.3`
+- **Runtime**: Docker Compose (`docker/tandoor.yaml`)
+- **Image**: `vabene1111/recipes:2.6.4`
 - **Port**: `127.0.0.1:8001`
 - **Exposure**: localhost only
 - **Live env path**: `/home/ubuntu/services/tandoor/.env`
 - **Live data paths**:
   - `/home/ubuntu/services/tandoor/staticfiles/`
   - `/home/ubuntu/services/tandoor/mediafiles/`
-- **Dependency note**: joins external Docker network `vikunja_default`
+  - `/home/ubuntu/services/tandoor/db/`
+- **Database**: dedicated local Postgres container `tandoor-db` (`postgres:18.3`)
+- **Dependency note**: Tandoor depends on `tandoor-db`; it does not share the Vikunja database
 
 ## Portainer
 
 Docker management UI.
 
-- **Runtime**: Docker Compose (`docker/portainer-compose.yaml`)
-- **Image**: `portainer/portainer-ce:latest`
+- **Runtime**: Docker Compose (`docker/portainer.yaml`)
+- **Image**: `portainer/portainer-ce:2.39.1`
 - **Port**: `127.0.0.1:9000`
 - **Exposure**: localhost only
 - **Live data path**: `/home/ubuntu/services/portainer/data/`

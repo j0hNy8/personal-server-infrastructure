@@ -29,43 +29,43 @@ See [Backups](backups.md) for full documentation.
 ### Docker services
 
 ```bash
-cd ~/repos/infra/docker
+cd ~/repos/personal-server-infrastructure/docker
 
 # Gitea
-docker compose -f gitea-compose.yaml up -d
-docker compose -f gitea-compose.yaml down
+docker compose -f gitea.yaml up -d
+docker compose -f gitea.yaml down
 
 # Uptime Kuma
-docker compose -f uptime-kuma-compose.yaml up -d
-docker compose -f uptime-kuma-compose.yaml down
+docker compose -f uptime-kuma.yaml up -d
+docker compose -f uptime-kuma.yaml down
 
 # Vikunja
-docker compose -f vikunja-compose.yaml up -d
-docker compose -f vikunja-compose.yaml down
+docker compose -f vikunja.yaml up -d
+docker compose -f vikunja.yaml down
 
 # Vaultwarden
-docker compose -f vaultwarden-compose.yaml up -d
-docker compose -f vaultwarden-compose.yaml down
+docker compose -f vaultwarden.yaml up -d
+docker compose -f vaultwarden.yaml down
 
 # n8n
-docker compose -f n8n-compose.yaml up -d
-docker compose -f n8n-compose.yaml down
+docker compose -f n8n.yaml up -d
+docker compose -f n8n.yaml down
 
 # Homepage
-docker compose -f homepage-compose.yaml up -d
-docker compose -f homepage-compose.yaml down
+docker compose -f homepage.yaml up -d
+docker compose -f homepage.yaml down
 
 # Monitoring stack
-docker compose -f monitoring-compose.yaml up -d
-docker compose -f monitoring-compose.yaml down
+docker compose -f monitoring.yaml up -d
+docker compose -f monitoring.yaml down
 
 # Portainer
-docker compose -f portainer-compose.yaml up -d
-docker compose -f portainer-compose.yaml down
+docker compose -f portainer.yaml up -d
+docker compose -f portainer.yaml down
 
 # Tandoor
-docker compose -f tandoor-compose.yaml up -d
-docker compose -f tandoor-compose.yaml down
+docker compose -f tandoor.yaml up -d
+docker compose -f tandoor.yaml down
 
 # Check containers
 docker ps
@@ -93,23 +93,23 @@ sudo systemctl reload nginx
 Preferred flow for each tracked compose file:
 
 ```bash
-cd ~/repos/infra/docker
-$EDITOR <service-compose>.yaml
-docker compose -f <service-compose>.yaml pull
-docker compose -f <service-compose>.yaml up -d
+cd ~/repos/personal-server-infrastructure/docker
+$EDITOR <service>.yaml
+docker compose -f <service>.yaml pull
+docker compose -f <service>.yaml up -d
 ```
 
 Relevant compose files:
 
-- `gitea-compose.yaml`
-- `uptime-kuma-compose.yaml`
-- `vikunja-compose.yaml`
-- `vaultwarden-compose.yaml`
-- `n8n-compose.yaml`
-- `homepage-compose.yaml`
-- `monitoring-compose.yaml`
-- `portainer-compose.yaml`
-- `tandoor-compose.yaml`
+- `gitea.yaml`
+- `uptime-kuma.yaml`
+- `vikunja.yaml`
+- `vaultwarden.yaml`
+- `n8n.yaml`
+- `homepage.yaml`
+- `monitoring.yaml`
+- `portainer.yaml`
+- `tandoor.yaml`
 
 Check logs after updates:
 
