@@ -1,0 +1,29 @@
+# Local env / secrets
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Backups / exports
+backups/
+*.tar
+*.tar.gz
+*.tgz
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

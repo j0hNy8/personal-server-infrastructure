@@ -1,0 +1,30 @@
+services:
+  n8n:
+    image: n8nio/n8n:1.123.29
+    container_name: n8n
+    restart: unless-stopped
+    env_file:
+      - /home/ubuntu/services/n8n/.env
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: n8n-db
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${POSTGRES_DB}
+      DB_POSTGRESDB_USER: ${POSTGRES_USER}
+      DB_POSTGRESDB_PASSWORD: ${POSTGRES_PASSWORD}
+      N8N_LISTEN_ADDRESS: 0.0.0.0
+    ports:
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - /home/ubuntu/services/n8n/data:/home/node/.n8n
+    depends_on:
+      - n8n-db
+
+  n8n-db:
+    image: postgres:18.3
+    container_name: n8n-db
+    restart: unless-stopped
+    env_file:
+      - /home/ubuntu/services/n8n/.env
+    volumes:
+      - /home/ubuntu/services/n8n/db:/var/lib/postgresql

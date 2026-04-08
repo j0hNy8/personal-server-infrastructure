@@ -1,0 +1,33 @@
+services:
+  vikunja-db:
+    image: postgres:18.3
+    container_name: vikunja-db
+    restart: unless-stopped
+    env_file:
+      - /home/ubuntu/services/vikunja/.env
+    volumes:
+      - /home/ubuntu/services/vikunja/db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  vikunja:
+    image: vikunja/vikunja:2.2.2
+    container_name: vikunja
+    user: "1001:1001"
+    restart: unless-stopped
+    depends_on:
+      vikunja-db:
+        condition: service_healthy
+    env_file:
+      - /home/ubuntu/services/vikunja/.env
+    environment:
+      HOME: /app/vikunja/files
+      XDG_CACHE_HOME: /app/vikunja/files/.cache
+    ports:
+      - "127.0.0.1:3456:3456"
+    volumes:
+      - /home/ubuntu/services/vikunja/files:/app/vikunja/files

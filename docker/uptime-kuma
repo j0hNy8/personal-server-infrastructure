@@ -1,0 +1,10 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2.2.1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      UPTIME_KUMA_HOST: 127.0.0.1
+    volumes:
+      - /home/ubuntu/services/uptime-kuma/data:/app/data

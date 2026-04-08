@@ -1,0 +1,156 @@
+# Services
+
+Verification date: `2026-04-07`
+
+## Gitea
+
+Self-hosted Git service.
+
+- **Runtime**: Docker Compose (`docker/gitea-compose.yaml`)
+- **Image**: `gitea/gitea:latest`
+- **Port**: `127.0.0.1:3000`
+- **Exposure**: localhost only
+- **Live data path**: `/home/ubuntu/services/gitea/data/`
+- **Config note**: `ROOT_URL` is still `http://127.0.0.1:3000/`
+
+## Uptime Kuma
+
+Service monitoring dashboard.
+
+- **Runtime**: Docker Compose (`docker/uptime-kuma-compose.yaml`)
+- **Image**: `louislam/uptime-kuma:2`
+- **Port**: `127.0.0.1:3001`
+- **Network mode**: `host`
+- **Bind control**: `UPTIME_KUMA_HOST=127.0.0.1`
+- **Public access**: proxied by nginx at `**redacted**.duckdns.org`
+- **Live data path**: `/home/ubuntu/services/uptime-kuma/data/`
+- **Current posture**: host networking is kept intentionally, but direct access is limited to localhost and exposed publicly only through nginx/TLS
+
+## Vikunja
+
+Task/project management app.
+
+- **Runtime**: Docker Compose (`docker/vikunja-compose.yaml`)
+- **Image**: `vikunja/vikunja:latest`
+- **Database**: `postgres:latest` in Docker on the same host
+- **Port**: `127.0.0.1:3456`
+- **Exposure**: localhost only right now
+- **Live env path**: `/home/ubuntu/services/vikunja/.env`
+- **Live data paths**:
+  - `/home/ubuntu/services/vikunja/db/`
+  - `/home/ubuntu/services/vikunja/files/`
+- **Runtime note**: container runs as `1001:1001`, with `HOME` and `XDG_CACHE_HOME` pointed at the files volume
+
+## Vaultwarden
+
+Password manager.
+
+- **Runtime**: Docker Compose (`docker/vaultwarden-compose.yaml`)
+- **Image**: `vaultwarden/server:latest`
+- **Port**: `127.0.0.1:8082`
+- **Public access**: proxied by nginx at `**redacted**.duckdns.org`
+- **Live data path**: `/home/ubuntu/services/vaultwarden/data/`
+- **Live env path**: `/home/ubuntu/services/vaultwarden/.env`
+
+## n8n
+
+Workflow automation service.
+
+- **Runtime**: Docker Compose (`docker/n8n-compose.yaml`)
+- **Image**: `n8nio/n8n:latest`
+- **Port**: `127.0.0.1:5678`
+- **Public access**: proxied by nginx at `**redacted**.duckdns.org`
+- **Live data path**: `/home/ubuntu/services/n8n/data/`
+- **Live env path**: `/home/ubuntu/services/n8n/.env`
+- **Dependency note**: joins external Docker network `vikunja_default` and uses the Vikunja Postgres container
+
+## Homepage
+
+Start page / dashboard.
+
+- **Runtime**: Docker Compose (`docker/homepage-compose.yaml`)
+- **Image**: `ghcr.io/gethomepage/homepage:v1.12.3`
+- **Port**: `127.0.0.1:3005`
+- **Exposure**: localhost only
+- **Live config path**: `/home/ubuntu/services/homepage/config/`
+
+## Monitoring stack
+
+### Grafana
+
+- **Runtime**: Docker Compose (`docker/monitoring-compose.yaml`)
+- **Image**: `grafana/grafana:latest`
+- **Port**: `127.0.0.1:3002`
+- **Exposure**: localhost only
+- **Live data path**: `/home/ubuntu/services/monitoring/grafana/data/`
+
+### Prometheus
+
+- **Runtime**: Docker Compose (`docker/monitoring-compose.yaml`)
+- **Image**: `prom/prometheus:latest`
+- **Port**: `127.0.0.1:9090`
+- **Exposure**: localhost only
+- **Live config/data path**:
+  - `/home/ubuntu/services/monitoring/prometheus/prometheus.yml`
+  - `/home/ubuntu/services/monitoring/prometheus/data/`
+
+### node_exporter
+
+- **Runtime**: Docker Compose (`docker/monitoring-compose.yaml`)
+- **Image**: `prom/node-exporter:latest`
+- **Port**: `127.0.0.1:9100`
+- **Exposure**: localhost only
+- **Runtime note**: `pid: host`, host root mounted read-only at `/:/host`
+
+## Tandoor
+
+Recipe manager.
+
+- **Runtime**: Docker Compose (`docker/tandoor-compose.yaml`)
+- **Image**: `vabene1111/recipes:2.6.3`
+- **Port**: `127.0.0.1:8001`
+- **Exposure**: localhost only
+- **Live env path**: `/home/ubuntu/services/tandoor/.env`
+- **Live data paths**:
+  - `/home/ubuntu/services/tandoor/staticfiles/`
+  - `/home/ubuntu/services/tandoor/mediafiles/`
+- **Dependency note**: joins external Docker network `vikunja_default`
+
+## Portainer
+
+Docker management UI.
+
+- **Runtime**: Docker Compose (`docker/portainer-compose.yaml`)
+- **Image**: `portainer/portainer-ce:latest`
+- **Port**: `127.0.0.1:9000`
+- **Exposure**: localhost only
+- **Live data path**: `/home/ubuntu/services/portainer/data/`
+- **Privilege note**: Docker socket mounted from `/var/run/docker.sock`
+
+## OpenClaw
+
+AI agent platform.
+
+- **Runtime**: systemd **user** service → `~/.config/systemd/user/openclaw-gateway.service`
+- **Enablement**: `enabled`
+- **Gateway bind**: `127.0.0.1:18789`
+- **Related browser debug bind**: `127.0.0.1:18800`
+- **Binary path**: `/usr/bin/node /home/ubuntu/.nvm/versions/node/v22.22.0/lib/node_modules/openclaw/dist/index.js gateway --port 18789`
+- **Data/config**: `~/.openclaw/`
+
+Operational note:
+
+- the unit file now loads secrets via `EnvironmentFile=/home/ubuntu/.openclaw/.env`
+
+## nginx
+
+Reverse proxy / web server (system package, not Docker).
+
+- **Status**: installed, active, listening on `*:80` and `*:443`
+- **Current use**: reverse proxies are active for Uptime Kuma, Vaultwarden, and n8n with Certbot-managed TLS
+- **Tracked repo copies**: `docs/nginx/uptime-kuma.conf`, `docs/nginx/vaultwarden.conf`, `docs/nginx/n8n.conf`
+
+## ssh
+
+- **Status**: active, listening on `*:22`
+- **Firewall**: allowed via ufw 

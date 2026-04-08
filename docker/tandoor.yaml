@@ -1,0 +1,23 @@
+services:
+  tandoor:
+    image: vabene1111/recipes:2.6.4
+    container_name: tandoor
+    restart: unless-stopped
+    env_file:
+      - /home/ubuntu/services/tandoor/.env
+    ports:
+      - "127.0.0.1:8001:80"
+    volumes:
+      - /home/ubuntu/services/tandoor/staticfiles:/opt/recipes/staticfiles
+      - /home/ubuntu/services/tandoor/mediafiles:/opt/recipes/mediafiles
+    depends_on:
+      - tandoor-db
+
+  tandoor-db:
+    image: postgres:18.3
+    container_name: tandoor-db
+    restart: unless-stopped
+    env_file:
+      - /home/ubuntu/services/tandoor/.env
+    volumes:
+      - /home/ubuntu/services/tandoor/db:/var/lib/postgresql
