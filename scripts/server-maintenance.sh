@@ -17,13 +17,23 @@ echo "--> Cleaning up system..." >> "$LOG_FILE"
 apt-get autoremove -y >> "$LOG_FILE" 2>&1
 apt-get clean >> "$LOG_FILE" 2>&1
 
-# 4. Vacuum system logs (keeps only the last 14 days of logs to prevent disk space exhaustion)
+# 4. Vacuum system logs (keeps only the last 7 days of logs to prevent disk space exhaustion)
 echo "--> Clearing old system logs..." >> "$LOG_FILE"
-journalctl --vacuum-time=14d >> "$LOG_FILE" 2>&1
+journalctl --vacuum-time=7d >> "$LOG_FILE" 2>&1
+
+# 5. Clean up unused Docker resources
+echo "--> Cleaning up unused Docker resources..." >> "$LOG_FILE"
+docker image prune -f >> "$LOG_FILE" 2>&1
+docker container prune -f >> "$LOG_FILE" 2>&1
+docker volume prune -f >> "$LOG_FILE" 2>&1
 
 echo "=== Maintenance Finished: $(date) ===" >> "$LOG_FILE"
 
-# 5. Smart Reboot Logic
+# 6. Log current disk usage
+echo "--> Current disk usage:" >> "$LOG_FILE"
+df -h >> "$LOG_FILE" 2>&1
+
+# 7. Smart Reboot Logic
 # Ubuntu automatically creates this file if a kernel/core update needs a restart
 if [ -f /var/run/reboot-required ]; then
     echo "⚠️ Reboot required by system updates. Restarting server now..." >> "$LOG_FILE"
